@@ -1,0 +1,3 @@
+Weld Shared aims at providing additional config for web containers,
+in order to easily share Weld resources among multiple web apps.
+
