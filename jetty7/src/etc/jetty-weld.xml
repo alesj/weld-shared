@@ -85,7 +85,11 @@
    </Call>
 
    <Ref id="Contexts">
-      <Set name="contextClass">org.jboss.weld.shared.jetty7.WeldAppContext</Set>
+      <Set name="contextClass">
+         <Call class="java.lang.Class" name="forName">
+            <Arg>org.jboss.weld.shared.jetty7.WeldAppContext</Arg>
+         </Call>
+      </Set>
    </Ref>
 
 </Configure>

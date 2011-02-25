@@ -35,7 +35,7 @@
 
          <dependency>
             <groupId>org.jboss.weld.shared</groupId>
-            <artifactId>api</artifactId>
+            <artifactId>weld-shared-api</artifactId>
             <version>${project.version}</version>
          </dependency>
 

@@ -219,8 +219,12 @@
       <Arg>org.jboss.weld.bootstrap.api.helpers.TCCLSingletonProvider</Arg>
     </Call>
 
-    <Ref id="Contexts">
-       <Set name="contextClass">org.jboss.weld.shared.jetty6.WeldAppContext</Set>
-    </Ref>
+   <Ref id="Contexts">
+      <Set name="contextClass">
+         <Call class="java.lang.Class" name="forName">
+            <Arg>org.jboss.weld.shared.jetty6.WeldAppContext</Arg>
+         </Call>
+      </Set>
+   </Ref>
 
 </Configure>
