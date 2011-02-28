@@ -3,6 +3,7 @@
 *.ipr
 *.iws
 api/target/
+plugins/target/
 jetty6/target/
 jetty7/target/
 tomcat6/target/
