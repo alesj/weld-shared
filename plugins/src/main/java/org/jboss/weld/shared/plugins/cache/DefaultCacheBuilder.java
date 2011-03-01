@@ -25,6 +25,7 @@ package org.jboss.weld.shared.plugins.cache;
 import java.io.IOException;
 
 import org.infinispan.Cache;
+import org.infinispan.config.Configuration;
 import org.infinispan.lifecycle.ComponentStatus;
 import org.infinispan.manager.DefaultCacheManager;
 import org.infinispan.manager.EmbeddedCacheManager;
@@ -61,13 +62,15 @@ public class DefaultCacheBuilder<T> implements CacheBuilder<T>
       cacheManager.stop();
    }
 
-   public Cache<String, T> getCache(String cacheName)
+   public Cache<String, T> getCache(String cacheName, String templateCacheName)
    {
-      return cacheManager.getCache(cacheName);
+      return getCache(cacheName, templateCacheName, null);
    }
 
-   public <V> Cache<String, V> getCache(String cacheName, Class<V> valueType)
+   public <V> Cache<String, V> getCache(String cacheName, String templateCacheName, Class<V> valueType)
    {
-      return cacheManager.getCache(cacheName);
+      Configuration overrideConfig = cacheManager.getDefaultConfiguration();
+      cacheManager.defineConfiguration(cacheName, templateCacheName, overrideConfig);
+      return cacheManager.getCache();
    }
 }

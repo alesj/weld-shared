@@ -85,7 +85,7 @@ public abstract class InfinispanSessionManagerAdapter<T extends HttpSession>
    private Cache<String, T> getCache()
    {
       if (cache == null)
-         cache = cacheBuilder.getCache(sessionsCacheName + "_" + region);
+         cache = cacheBuilder.getCache(region, sessionsCacheName);
 
       return cache;
    }
@@ -107,7 +107,7 @@ public abstract class InfinispanSessionManagerAdapter<T extends HttpSession>
 
    public Map newAttributeMap(T session)
    {
-      return new SharedAttributeMap(getId(session), cacheBuilder.getCache(attributesCacheName + "_" + region, Serializable.class));
+      return new SharedAttributeMap(getId(session), cacheBuilder.getCache(region, attributesCacheName, Serializable.class));
    }
 
    public Map getSessionMap()

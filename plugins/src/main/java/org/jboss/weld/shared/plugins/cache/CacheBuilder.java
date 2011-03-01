@@ -46,16 +46,18 @@ public interface CacheBuilder<T>
     * Get Infinispan cache.
     *
     * @param cacheName the cache name
+    * @param templateCacheName the template cache name
     * @return named cache instance
     */
-   Cache<String, T> getCache(String cacheName);
+   Cache<String, T> getCache(String cacheName, String templateCacheName);
 
    /**
     * Get Infinispan cache.
     *
     * @param cacheName the cache name
+    * @param templateCacheName the template cache name
     * @param valueType the value type
     * @return named cache instance
     */
-   <V> Cache<String, V> getCache(String cacheName, Class<V> valueType);
+   <V> Cache<String, V> getCache(String cacheName, String templateCacheName, Class<V> valueType);
 }
