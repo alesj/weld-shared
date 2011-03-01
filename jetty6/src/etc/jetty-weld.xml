@@ -103,7 +103,7 @@
         <Set name="handlers">
          <Array type="org.mortbay.jetty.Handler">
            <Item>
-             <New id="Contexts" class="org.mortbay.jetty.handler.ContextHandlerCollection"/>
+             <New id="Contexts" class="org.jboss.weld.shared.jetty6.context.CustomContextHandlerCollection"/>
            </Item>
            <Item>
              <New id="DefaultHandler" class="org.mortbay.jetty.handler.DefaultHandler"/>
@@ -220,10 +220,10 @@
     </Call>
 
     <Ref id="Contexts">
-      <Set name="contextClass">
-         <Call class="java.lang.Class" name="forName">
-            <Arg>org.jboss.weld.shared.jetty6.WeldAppContext</Arg>
-         </Call>
+      <Set name="sessionManagerProvider">
+         <New id="SessionManagerProvider" class="org.jboss.weld.shared.jetty6.session.InfinispanSessionManagerProvider">
+            <Arg>infinispan-default-config.xml</Arg>
+         </New>
       </Set>
     </Ref>
 

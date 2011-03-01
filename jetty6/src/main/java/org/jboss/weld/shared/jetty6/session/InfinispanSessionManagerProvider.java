@@ -20,37 +20,32 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.jboss.weld.shared.jetty6;
+package org.jboss.weld.shared.jetty6.session;
 
 import java.io.IOException;
-import java.util.EventListener;
 
-import org.jboss.weld.shared.api.BeansChecker;
-import org.jboss.weld.shared.api.Utils;
+import org.jboss.weld.shared.plugins.cache.CacheBuilder;
+import org.jboss.weld.shared.plugins.cache.DefaultCacheBuilder;
 
-import org.mortbay.jetty.webapp.WebAppContext;
-import org.mortbay.resource.Resource;
+import org.mortbay.jetty.SessionManager;
+import org.mortbay.jetty.servlet.AbstractSessionManager;
 
 /**
- * Custom Weld app context.
+ * Infinispan based session manager provider.
  *
  * @author <a href="mailto:ales.justin@jboss.org">Ales Justin</a>
  */
-public class WeldAppContext extends WebAppContext implements BeansChecker
+public class InfinispanSessionManagerProvider implements SessionManagerProvider
 {
-   public boolean checkWebInf() throws IOException
+   private CacheBuilder<AbstractSessionManager.Session> cacheBuilder;
+
+   public InfinispanSessionManagerProvider(String fileName) throws IOException
    {
-      Resource beansXml = getWebInf().addPath("beans.xml");
-      return beansXml.exists();
+      cacheBuilder = new DefaultCacheBuilder<AbstractSessionManager.Session>(fileName, false);
    }
 
-   public void setEventListeners(EventListener[] eventListeners)
+   public SessionManager createSessionManager()
    {
-      if (Utils.isWeldApp(this))
-      {
-         eventListeners = Utils.applyListener(eventListeners);
-      }
-      super.setEventListeners(eventListeners);
+      return new InfinispanSessionManager(cacheBuilder);
    }
 }
-

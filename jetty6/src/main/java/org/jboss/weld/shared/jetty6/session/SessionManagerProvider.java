@@ -20,37 +20,21 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.jboss.weld.shared.jetty6;
+package org.jboss.weld.shared.jetty6.session;
 
-import java.io.IOException;
-import java.util.EventListener;
-
-import org.jboss.weld.shared.api.BeansChecker;
-import org.jboss.weld.shared.api.Utils;
-
-import org.mortbay.jetty.webapp.WebAppContext;
-import org.mortbay.resource.Resource;
+import org.mortbay.jetty.SessionManager;
 
 /**
- * Custom Weld app context.
+ * SessionManager provider.
  *
  * @author <a href="mailto:ales.justin@jboss.org">Ales Justin</a>
  */
-public class WeldAppContext extends WebAppContext implements BeansChecker
+public interface SessionManagerProvider
 {
-   public boolean checkWebInf() throws IOException
-   {
-      Resource beansXml = getWebInf().addPath("beans.xml");
-      return beansXml.exists();
-   }
-
-   public void setEventListeners(EventListener[] eventListeners)
-   {
-      if (Utils.isWeldApp(this))
-      {
-         eventListeners = Utils.applyListener(eventListeners);
-      }
-      super.setEventListeners(eventListeners);
-   }
+   /**
+    * Create session manager.
+    *
+    * @return new session manager
+    */
+   SessionManager createSessionManager();
 }
-
