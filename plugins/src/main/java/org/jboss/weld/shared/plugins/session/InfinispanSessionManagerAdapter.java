@@ -86,6 +86,16 @@ public abstract class InfinispanSessionManagerAdapter<T extends HttpSession>
       return cache;
    }
 
+   public void start()
+   {
+      cacheBuilder.start();
+   }
+
+   public void stop()
+   {
+      cacheBuilder.stop();
+   }
+
    protected abstract String getId(T session);
 
    protected abstract void invalidate(T session);

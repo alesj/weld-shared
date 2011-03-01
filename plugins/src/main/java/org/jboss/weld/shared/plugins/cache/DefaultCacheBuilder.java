@@ -25,6 +25,7 @@ package org.jboss.weld.shared.plugins.cache;
 import java.io.IOException;
 import java.util.Map;
 
+import org.infinispan.lifecycle.ComponentStatus;
 import org.infinispan.manager.DefaultCacheManager;
 import org.infinispan.manager.EmbeddedCacheManager;
 
@@ -47,6 +48,17 @@ public class DefaultCacheBuilder<T> implements CacheBuilder<T>
    public DefaultCacheBuilder(String fileName, boolean start) throws IOException
    {
       cacheManager = new DefaultCacheManager(fileName, start);
+   }
+
+   public void start()
+   {
+      if (cacheManager.getStatus() != ComponentStatus.RUNNING)
+         cacheManager.start();
+   }
+
+   public void stop()
+   {
+      cacheManager.stop();
    }
 
    public Map<String, T> getCache(String cacheName)

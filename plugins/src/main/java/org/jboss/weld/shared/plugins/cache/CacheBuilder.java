@@ -33,6 +33,16 @@ import java.util.Map;
 public interface CacheBuilder<T>
 {
    /**
+    * Start.
+    */
+   void start();
+
+   /**
+    * Stop.
+    */
+   void stop();
+
+   /**
     * Get Infinispan cache.
     *
     * @param cacheName the cache name

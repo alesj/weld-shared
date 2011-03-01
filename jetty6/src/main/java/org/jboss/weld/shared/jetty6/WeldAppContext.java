@@ -38,6 +38,7 @@ import org.mortbay.resource.Resource;
  */
 public class WeldAppContext extends WebAppContext implements BeansChecker
 {
+
    public boolean checkWebInf() throws IOException
    {
       Resource beansXml = getWebInf().addPath("beans.xml");

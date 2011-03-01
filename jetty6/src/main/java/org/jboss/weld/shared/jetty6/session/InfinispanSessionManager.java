@@ -47,6 +47,18 @@ public class InfinispanSessionManager extends AbstractSessionManager
       adapter = new Jetty6InfinispanSessionManagerAdapter(cacheBuilder);
    }
 
+   public void doStart() throws Exception
+   {
+      super.doStart();
+      adapter.start();
+   }
+
+   public void doStop() throws Exception
+   {
+      adapter.stop();
+      super.doStop();
+   }
+
    public Map getSessionMap()
    {
       return adapter.getSessionMap();
