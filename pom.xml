@@ -128,6 +128,22 @@
          </snapshots>
       </repository>
    </repositories>
+   <pluginRepositories>
+      <pluginRepository>
+         <id>central</id>
+         <name>Maven Central Repository</name>
+         <url>https://oss.sonatype.org/content/repositories/central</url>
+         <layout>default</layout>
+         <releases>
+            <enabled>true</enabled>
+            <updatePolicy>never</updatePolicy>
+         </releases>
+         <snapshots>
+            <enabled>true</enabled>
+            <updatePolicy>never</updatePolicy>
+         </snapshots>
+      </pluginRepository>
+   </pluginRepositories>
 
 </project>
 
