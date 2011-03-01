@@ -27,9 +27,9 @@ import javax.servlet.http.HttpServletRequest;
 import java.lang.reflect.Method;
 import java.util.Map;
 
+import org.jboss.weld.shared.plugins.cache.CacheBuilder;
 import org.jboss.weld.shared.plugins.session.InfinispanSessionManagerAdapter;
 
-import org.infinispan.Cache;
 import org.mortbay.jetty.servlet.AbstractSessionManager;
 
 /**
@@ -42,9 +42,9 @@ public class InfinispanSessionManager extends AbstractSessionManager
    private static Method idHack = InfinispanSessionManagerAdapter.getClusterId(Session.class);
    private InfinispanSessionManagerAdapter<Session> adapter;
 
-   public InfinispanSessionManager(Cache<String, Session> cache)
+   public InfinispanSessionManager(CacheBuilder<Session> cacheBuilder)
    {
-      adapter = new Jetty6InfinispanSessionManagerAdapter(cache);
+      adapter = new Jetty6InfinispanSessionManagerAdapter(cacheBuilder);
    }
 
    public Map getSessionMap()
@@ -78,7 +78,7 @@ public class InfinispanSessionManager extends AbstractSessionManager
       {
          protected Map newAttributeMap()
          {
-            return adapter.newAttributeMap();
+            return adapter.newAttributeMap(this);
          }
       };
    }
@@ -90,9 +90,9 @@ public class InfinispanSessionManager extends AbstractSessionManager
 
    private class Jetty6InfinispanSessionManagerAdapter extends InfinispanSessionManagerAdapter<Session>
    {
-      private Jetty6InfinispanSessionManagerAdapter(Cache<String, Session> cache)
+      private Jetty6InfinispanSessionManagerAdapter(CacheBuilder<Session> cacheBuilder)
       {
-         super(cache);
+         super(cacheBuilder);
       }
 
       protected String getId(Session session)

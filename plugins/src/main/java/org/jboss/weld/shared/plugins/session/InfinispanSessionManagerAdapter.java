@@ -24,16 +24,16 @@ package org.jboss.weld.shared.plugins.session;
 
 import javax.servlet.http.HttpSession;
 
+import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.security.AccessController;
 import java.security.PrivilegedExceptionAction;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.infinispan.Cache;
+import org.jboss.weld.shared.plugins.cache.CacheBuilder;
 
 /**
  * Infinispan based session manager adapter.
@@ -44,13 +44,18 @@ import org.infinispan.Cache;
  */
 public abstract class InfinispanSessionManagerAdapter<T extends HttpSession>
 {
-   private Cache<String, T> cache;
+   private CacheBuilder<T> cacheBuilder;
 
-   protected InfinispanSessionManagerAdapter(Cache<String, T> cache)
+   private Map<String, T> cache;
+   private String sessionsCacheName = "Sessions";
+   private String attributesCacheName = "Attributes";
+
+   protected InfinispanSessionManagerAdapter(CacheBuilder<T> cacheBuilder)
    {
-      if (cache == null)
-         throw new IllegalArgumentException("Null cache");
-      this.cache = cache;
+      if (cacheBuilder == null)
+         throw new IllegalArgumentException("Null cache builder");
+
+      this.cacheBuilder = cacheBuilder;
    }
 
    public static Method getClusterId(final Class<?> sessionClass)
@@ -73,45 +78,63 @@ public abstract class InfinispanSessionManagerAdapter<T extends HttpSession>
       return null;
    }
 
+   private Map<String, T> getCache()
+   {
+      if (cache == null)
+         cache = cacheBuilder.getCache(sessionsCacheName);
+
+      return cache;
+   }
+
    protected abstract String getId(T session);
 
    protected abstract void invalidate(T session);
 
-   public Map newAttributeMap()
+   public Map newAttributeMap(T session)
    {
-      return new HashMap(3); // TODO
+      return new SharedAttributeMap(getId(session), cacheBuilder.getCache(attributesCacheName, Serializable.class));
    }
 
    public Map getSessionMap()
    {
-      return Collections.unmodifiableMap(cache);
+      return Collections.unmodifiableMap(getCache());
    }
 
    public int getSessions()
    {
-      return cache.size();
+      return getCache().size();
    }
 
    public void addSession(T session)
    {
-      cache.put(getId(session), session);
+      getCache().put(getId(session), session);
    }
 
    public T getSession(String idInCluster)
    {
-      return cache.get(idInCluster);
+      return getCache().get(idInCluster);
    }
 
    public void invalidateSessions()
    {
-      Set<T> sessions = new HashSet<T>(cache.values());
-      cache.clear();
+      Set<T> sessions = new HashSet<T>(getCache().values());
+      getCache().clear();
       for (T session : sessions)
          invalidate(session);
    }
 
    public void removeSession(String idInCluster)
    {
-      cache.remove(idInCluster);
+      getCache().remove(idInCluster);
+   }
+
+   public void setSessionsCacheName(String sessionsCacheName)
+   {
+      this.sessionsCacheName = sessionsCacheName;
+   }
+
+   public void setAttributesCacheName(String attributesCacheName)
+   {
+      this.attributesCacheName = attributesCacheName;
    }
 }
