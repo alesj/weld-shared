@@ -53,7 +53,7 @@ public class CustomContextHandlerCollection extends ContextHandlerCollection
          if (sessionManagerProvider != null)
          {
             SessionHandler sessionHandler = wac.getSessionHandler();
-            SessionManager manager = sessionManagerProvider.createSessionManager();
+            SessionManager manager = sessionManagerProvider.createSessionManager(wac.getWar());
             sessionHandler.setSessionManager(manager);
          }
       }

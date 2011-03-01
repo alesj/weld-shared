@@ -40,11 +40,12 @@ import org.mortbay.jetty.servlet.AbstractSessionManager;
 public class InfinispanSessionManager extends AbstractSessionManager
 {
    private static Method idHack = InfinispanSessionManagerAdapter.getClusterId(Session.class);
+
    private InfinispanSessionManagerAdapter<Session> adapter;
 
-   public InfinispanSessionManager(CacheBuilder<Session> cacheBuilder)
+   public InfinispanSessionManager(CacheBuilder<Session> cacheBuilder, String applicationId)
    {
-      adapter = new Jetty6InfinispanSessionManagerAdapter(cacheBuilder);
+      adapter = new Jetty6InfinispanSessionManagerAdapter(cacheBuilder, applicationId);
    }
 
    public void doStart() throws Exception
@@ -102,9 +103,9 @@ public class InfinispanSessionManager extends AbstractSessionManager
 
    private class Jetty6InfinispanSessionManagerAdapter extends InfinispanSessionManagerAdapter<Session>
    {
-      private Jetty6InfinispanSessionManagerAdapter(CacheBuilder<Session> cacheBuilder)
+      private Jetty6InfinispanSessionManagerAdapter(CacheBuilder<Session> cacheBuilder, String region)
       {
-         super(cacheBuilder);
+         super(cacheBuilder, region);
       }
 
       protected String getId(Session session)

@@ -219,11 +219,17 @@
       <Arg>org.jboss.weld.bootstrap.api.helpers.TCCLSingletonProvider</Arg>
     </Call>
 
-    <Ref id="Contexts">
-      <Set name="sessionManagerProvider">
+    <Call name="addLifeCycle">
+      <Arg>
          <New id="SessionManagerProvider" class="org.jboss.weld.shared.jetty6.session.InfinispanSessionManagerProvider">
             <Arg>infinispan-default-config.xml</Arg>
          </New>
+      </Arg>
+    </Call>
+
+    <Ref id="Contexts">
+      <Set name="sessionManagerProvider">
+         <Ref id="SessionManagerProvider"/>
       </Set>
     </Ref>
 

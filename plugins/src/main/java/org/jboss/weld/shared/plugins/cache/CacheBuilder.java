@@ -22,7 +22,7 @@
 
 package org.jboss.weld.shared.plugins.cache;
 
-import java.util.Map;
+import org.infinispan.Cache;
 
 /**
  * Infinispan cache builder SPI.
@@ -48,7 +48,7 @@ public interface CacheBuilder<T>
     * @param cacheName the cache name
     * @return named cache instance
     */
-   Map<String, T> getCache(String cacheName);
+   Cache<String, T> getCache(String cacheName);
 
    /**
     * Get Infinispan cache.
@@ -57,5 +57,5 @@ public interface CacheBuilder<T>
     * @param valueType the value type
     * @return named cache instance
     */
-   <V> Map<String, V> getCache(String cacheName, Class<V> valueType);
+   <V> Cache<String, V> getCache(String cacheName, Class<V> valueType);
 }

@@ -27,6 +27,7 @@ import java.io.IOException;
 import org.jboss.weld.shared.plugins.cache.CacheBuilder;
 import org.jboss.weld.shared.plugins.cache.DefaultCacheBuilder;
 
+import org.mortbay.component.AbstractLifeCycle;
 import org.mortbay.jetty.SessionManager;
 import org.mortbay.jetty.servlet.AbstractSessionManager;
 
@@ -35,8 +36,9 @@ import org.mortbay.jetty.servlet.AbstractSessionManager;
  *
  * @author <a href="mailto:ales.justin@jboss.org">Ales Justin</a>
  */
-public class InfinispanSessionManagerProvider implements SessionManagerProvider
+public class InfinispanSessionManagerProvider extends AbstractLifeCycle implements SessionManagerProvider
 {
+   private boolean lazyStart = true;
    private CacheBuilder<AbstractSessionManager.Session> cacheBuilder;
 
    public InfinispanSessionManagerProvider(String fileName) throws IOException
@@ -44,8 +46,24 @@ public class InfinispanSessionManagerProvider implements SessionManagerProvider
       cacheBuilder = new DefaultCacheBuilder<AbstractSessionManager.Session>(fileName, false);
    }
 
-   public SessionManager createSessionManager()
+   public SessionManager createSessionManager(String applicationId)
    {
-      return new InfinispanSessionManager(cacheBuilder);
+      return new InfinispanSessionManager(cacheBuilder, applicationId);
+   }
+
+   protected void doStart() throws Exception
+   {
+      if (lazyStart == false)
+         cacheBuilder.start();
+   }
+
+   protected void doStop() throws Exception
+   {
+      cacheBuilder.stop();
+   }
+
+   public void setLazyStart(boolean lazyStart)
+   {
+      this.lazyStart = lazyStart;
    }
 }

@@ -34,7 +34,8 @@ public interface SessionManagerProvider
    /**
     * Create session manager.
     *
+    * @param applicationId the application id
     * @return new session manager
     */
-   SessionManager createSessionManager();
+   SessionManager createSessionManager(String applicationId);
 }

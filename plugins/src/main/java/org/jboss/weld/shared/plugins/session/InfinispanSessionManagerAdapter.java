@@ -35,6 +35,8 @@ import java.util.Set;
 
 import org.jboss.weld.shared.plugins.cache.CacheBuilder;
 
+import org.infinispan.Cache;
+
 /**
  * Infinispan based session manager adapter.
  * It tries to provide one-to-one mapping to actual methods.
@@ -46,16 +48,18 @@ public abstract class InfinispanSessionManagerAdapter<T extends HttpSession>
 {
    private CacheBuilder<T> cacheBuilder;
 
-   private Map<String, T> cache;
+   private Cache<String, T> cache;
+   private String region;
    private String sessionsCacheName = "Sessions";
    private String attributesCacheName = "Attributes";
 
-   protected InfinispanSessionManagerAdapter(CacheBuilder<T> cacheBuilder)
+   protected InfinispanSessionManagerAdapter(CacheBuilder<T> cacheBuilder, String region)
    {
       if (cacheBuilder == null)
          throw new IllegalArgumentException("Null cache builder");
 
       this.cacheBuilder = cacheBuilder;
+      this.region = region;
    }
 
    public static Method getClusterId(final Class<?> sessionClass)
@@ -78,10 +82,10 @@ public abstract class InfinispanSessionManagerAdapter<T extends HttpSession>
       return null;
    }
 
-   private Map<String, T> getCache()
+   private Cache<String, T> getCache()
    {
       if (cache == null)
-         cache = cacheBuilder.getCache(sessionsCacheName);
+         cache = cacheBuilder.getCache(sessionsCacheName + "_" + region);
 
       return cache;
    }
@@ -93,7 +97,8 @@ public abstract class InfinispanSessionManagerAdapter<T extends HttpSession>
 
    public void stop()
    {
-      cacheBuilder.stop();
+      if (cache != null)
+         cache.stop();
    }
 
    protected abstract String getId(T session);
@@ -102,7 +107,7 @@ public abstract class InfinispanSessionManagerAdapter<T extends HttpSession>
 
    public Map newAttributeMap(T session)
    {
-      return new SharedAttributeMap(getId(session), cacheBuilder.getCache(attributesCacheName, Serializable.class));
+      return new SharedAttributeMap(getId(session), cacheBuilder.getCache(attributesCacheName + "_" + region, Serializable.class));
    }
 
    public Map getSessionMap()
