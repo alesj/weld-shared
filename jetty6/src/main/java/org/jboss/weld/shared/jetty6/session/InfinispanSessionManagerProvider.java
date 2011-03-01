@@ -25,7 +25,6 @@ package org.jboss.weld.shared.jetty6.session;
 import java.io.IOException;
 
 import org.jboss.weld.shared.plugins.cache.CacheBuilder;
-import org.jboss.weld.shared.plugins.cache.DefaultCacheBuilder;
 
 import org.mortbay.component.AbstractLifeCycle;
 import org.mortbay.jetty.SessionManager;
@@ -41,9 +40,11 @@ public class InfinispanSessionManagerProvider extends AbstractLifeCycle implemen
    private boolean lazyStart = true;
    private CacheBuilder<AbstractSessionManager.Session> cacheBuilder;
 
-   public InfinispanSessionManagerProvider(String fileName) throws IOException
+   public InfinispanSessionManagerProvider(CacheBuilder<AbstractSessionManager.Session> cacheBuilder) throws IOException
    {
-      cacheBuilder = new DefaultCacheBuilder<AbstractSessionManager.Session>(fileName, false);
+      if (cacheBuilder == null)
+         throw new IllegalArgumentException("Null cache builder");
+      this.cacheBuilder = cacheBuilder;
    }
 
    public SessionManager createSessionManager(String applicationId)

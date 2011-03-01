@@ -219,10 +219,14 @@
       <Arg>org.jboss.weld.bootstrap.api.helpers.TCCLSingletonProvider</Arg>
     </Call>
 
+    <New id="CacheBuilder" class="org.jboss.weld.shared.plugins.cache.DefaultCacheBuilder">
+       <Arg>infinispan-default-config.xml</Arg>
+    </New>
+
     <Call name="addLifeCycle">
       <Arg>
          <New id="SessionManagerProvider" class="org.jboss.weld.shared.jetty6.session.InfinispanSessionManagerProvider">
-            <Arg>infinispan-default-config.xml</Arg>
+            <Ref id="CacheBuilder"/>
          </New>
       </Arg>
     </Call>

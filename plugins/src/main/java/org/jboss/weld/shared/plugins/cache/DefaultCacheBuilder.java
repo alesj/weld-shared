@@ -38,17 +38,31 @@ import org.infinispan.manager.EmbeddedCacheManager;
 public class DefaultCacheBuilder<T> implements CacheBuilder<T>
 {
    private EmbeddedCacheManager cacheManager;
+   private Configuration overrideConfiguration;
+
+   /**
+    * Cache builder ctor.
+    *
+    * @param fileName the config file name
+    * @throws java.io.IOException for any I/O error
+    */
+   public DefaultCacheBuilder(String fileName) throws IOException
+   {
+      this(fileName, false, false);
+   }
 
    /**
     * Cache builder ctor.
     *
     * @param fileName the config file name
     * @param start the start flag
+    * @param defaultAsOverride do we take default configuration as override
     * @throws java.io.IOException for any I/O error
     */
-   public DefaultCacheBuilder(String fileName, boolean start) throws IOException
+   public DefaultCacheBuilder(String fileName, boolean start, boolean defaultAsOverride) throws IOException
    {
       cacheManager = new DefaultCacheManager(fileName, start);
+      overrideConfiguration = defaultAsOverride ? cacheManager.getDefaultConfiguration() : new Configuration();
    }
 
    public void start()
@@ -69,8 +83,7 @@ public class DefaultCacheBuilder<T> implements CacheBuilder<T>
 
    public <V> Cache<String, V> getCache(String cacheName, String templateCacheName, Class<V> valueType)
    {
-      Configuration overrideConfig = cacheManager.getDefaultConfiguration();
-      cacheManager.defineConfiguration(cacheName, templateCacheName, overrideConfig);
+      cacheManager.defineConfiguration(cacheName, templateCacheName, overrideConfiguration);
       return cacheManager.getCache();
    }
 }
