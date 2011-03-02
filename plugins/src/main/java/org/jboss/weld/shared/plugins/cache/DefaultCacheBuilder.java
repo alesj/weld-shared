@@ -26,6 +26,7 @@ import java.io.IOException;
 
 import org.infinispan.Cache;
 import org.infinispan.config.Configuration;
+import org.infinispan.config.GlobalConfiguration;
 import org.infinispan.lifecycle.ComponentStatus;
 import org.infinispan.manager.DefaultCacheManager;
 import org.infinispan.manager.EmbeddedCacheManager;
@@ -69,6 +70,11 @@ public class DefaultCacheBuilder implements CacheBuilder
    {
       if (cacheManager.getStatus() != ComponentStatus.RUNNING)
          cacheManager.start();
+   }
+
+   public GlobalConfiguration config()
+   {
+      return cacheManager.getGlobalConfiguration();
    }
 
    public void stop()

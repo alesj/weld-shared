@@ -25,14 +25,18 @@ package org.jboss.weld.shared.jetty6.session;
 import javax.servlet.http.HttpServletRequest;
 
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectStreamException;
+import java.io.ObjectInput;
+import java.io.ObjectOutput;
 import java.lang.reflect.Method;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.jboss.weld.shared.plugins.cache.CacheBuilder;
 import org.jboss.weld.shared.plugins.session.InfinispanSessionManagerAdapter;
 
+import org.infinispan.marshall.Externalizer;
 import org.mortbay.jetty.servlet.AbstractSessionManager;
 
 /**
@@ -42,6 +46,7 @@ import org.mortbay.jetty.servlet.AbstractSessionManager;
  */
 public class InfinispanSessionManager extends AbstractSessionManager
 {
+   private static AtomicBoolean addExternalizer = new AtomicBoolean(true);
    private static Method idHack = InfinispanSessionManagerAdapter.getClusterId(Session.class);
 
    private InfinispanSessionManagerAdapter<Session> adapter;
@@ -49,6 +54,9 @@ public class InfinispanSessionManager extends AbstractSessionManager
    public InfinispanSessionManager(CacheBuilder cacheBuilder, String applicationId)
    {
       adapter = new Jetty6InfinispanSessionManagerAdapter(cacheBuilder, applicationId);
+
+      if (addExternalizer.getAndSet(false))
+         cacheBuilder.config().addExternalizer(new SessionExternalizer());
    }
 
    public void doStart() throws Exception
@@ -105,21 +113,67 @@ public class InfinispanSessionManager extends AbstractSessionManager
          super(request);
       }
 
+      private InfinispanSession(long created, String clusterId, long cookieSet, long lastAccessed)
+      {
+         super(created, clusterId);
+         _cookieSet = cookieSet;
+         _lastAccessed = lastAccessed;
+      }
+
       protected Map newAttributeMap()
       {
          return adapter.newAttributeMap(this);
       }
 
-      protected Object writeReplace() throws ObjectStreamException
+      private void doWriteObject(ObjectOutput out) throws IOException
       {
-         _values = null;
-         return this;
+         out.writeUTF(_clusterId);
+         out.writeUTF(_nodeId);
+         out.writeBoolean(_idChanged);
+         out.writeLong( _created);
+         out.writeLong(_cookieSet);
+         out.writeLong(_accessed);
+         out.writeLong(_lastAccessed);
+         out.writeInt(_requests);
+      }
+   }
+
+   private class SessionExternalizer implements Externalizer<InfinispanSession>
+   {
+      private Set<Class<? extends InfinispanSession>> classes = new HashSet<Class<? extends InfinispanSession>>(1);
+
+      private SessionExternalizer()
+      {
+         classes.add(InfinispanSession.class);
       }
 
-      private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException
+      public void writeObject(ObjectOutput out, InfinispanSession object) throws IOException
       {
-         in.defaultReadObject();
-         // _values should be set lazily, with the right cache value
+         object.doWriteObject(out);
+      }
+
+      @SuppressWarnings({"UnusedDeclaration"})
+      public InfinispanSession readObject(ObjectInput in) throws IOException, ClassNotFoundException
+      {
+         String clusterId = in.readUTF();
+         String nodeId = in.readUTF();
+         boolean idChanged = in.readBoolean();
+         long created = in.readLong();
+         long cookieSet = in.readLong();
+         long accessed = in.readLong();
+         long lastAccessed = in.readLong();
+         int requests = in.readInt();
+         return new InfinispanSession(created, clusterId, cookieSet, lastAccessed);
+      }
+
+      public Set<Class<? extends InfinispanSession>> getTypeClasses()
+      {
+         return classes;
+      }
+
+      public Integer getId()
+      {
+         return null;  // null OK?
       }
    }
 

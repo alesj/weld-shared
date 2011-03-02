@@ -23,6 +23,7 @@
 package org.jboss.weld.shared.plugins.cache;
 
 import org.infinispan.Cache;
+import org.infinispan.config.GlobalConfiguration;
 
 /**
  * Infinispan cache builder SPI.
@@ -40,6 +41,13 @@ public interface CacheBuilder
     * Stop.
     */
    void stop();
+
+   /**
+    * Get global configuration.
+    *
+    * @return the global configuration
+    */
+   GlobalConfiguration config();
 
    /**
     * Get Infinispan cache.
