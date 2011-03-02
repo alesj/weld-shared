@@ -46,14 +46,14 @@ import org.infinispan.Cache;
  */
 public abstract class InfinispanSessionManagerAdapter<T extends HttpSession>
 {
-   private CacheBuilder<T> cacheBuilder;
+   private CacheBuilder cacheBuilder;
 
    private Cache<String, T> cache;
    private String region;
    private String sessionsCacheName = "Sessions";
    private String attributesCacheName = "Attributes";
 
-   protected InfinispanSessionManagerAdapter(CacheBuilder<T> cacheBuilder, String region)
+   protected InfinispanSessionManagerAdapter(CacheBuilder cacheBuilder, String region)
    {
       if (cacheBuilder == null)
          throw new IllegalArgumentException("Null cache builder");
@@ -107,7 +107,8 @@ public abstract class InfinispanSessionManagerAdapter<T extends HttpSession>
 
    public Map newAttributeMap(T session)
    {
-      return new SharedAttributeMap(getId(session), cacheBuilder.getCache(region, attributesCacheName, Serializable.class));
+      Cache<String, Serializable> attributes = cacheBuilder.getCache(region, attributesCacheName);
+      return new SharedAttributeMap(getId(session), attributes);
    }
 
    public Map getSessionMap()

@@ -25,7 +25,7 @@
 
    <properties>
       <weld.version>1.1.0-SNAPSHOT</weld.version>
-      <infinispan.version>4.2.1.CR3</infinispan.version>
+      <infinispan.version>5.0.0.ALPHA3</infinispan.version>
       <servlet.api.version>1.0.0.Beta2</servlet.api.version>
       <jetty6.version>6.1.21</jetty6.version>
       <jetty7.version>7.3.0.v20110203</jetty7.version>

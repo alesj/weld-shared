@@ -35,7 +35,7 @@ import org.infinispan.manager.EmbeddedCacheManager;
  *
  * @author <a href="mailto:ales.justin@jboss.org">Ales Justin</a>
  */
-public class DefaultCacheBuilder<T> implements CacheBuilder<T>
+public class DefaultCacheBuilder implements CacheBuilder
 {
    private EmbeddedCacheManager cacheManager;
    private Configuration overrideConfiguration;
@@ -76,12 +76,7 @@ public class DefaultCacheBuilder<T> implements CacheBuilder<T>
       cacheManager.stop();
    }
 
-   public Cache<String, T> getCache(String cacheName, String templateCacheName)
-   {
-      return getCache(cacheName, templateCacheName, null);
-   }
-
-   public <V> Cache<String, V> getCache(String cacheName, String templateCacheName, Class<V> valueType)
+   public <V> Cache<String, V> getCache(String cacheName, String templateCacheName)
    {
       cacheManager.defineConfiguration(cacheName, templateCacheName, overrideConfiguration);
       return cacheManager.getCache(cacheName);

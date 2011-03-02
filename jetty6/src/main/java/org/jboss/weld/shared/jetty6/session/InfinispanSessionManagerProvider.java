@@ -28,7 +28,6 @@ import org.jboss.weld.shared.plugins.cache.CacheBuilder;
 
 import org.mortbay.component.AbstractLifeCycle;
 import org.mortbay.jetty.SessionManager;
-import org.mortbay.jetty.servlet.AbstractSessionManager;
 
 /**
  * Infinispan based session manager provider.
@@ -38,9 +37,9 @@ import org.mortbay.jetty.servlet.AbstractSessionManager;
 public class InfinispanSessionManagerProvider extends AbstractLifeCycle implements SessionManagerProvider
 {
    private boolean lazyStart = true;
-   private CacheBuilder<AbstractSessionManager.Session> cacheBuilder;
+   private CacheBuilder cacheBuilder;
 
-   public InfinispanSessionManagerProvider(CacheBuilder<AbstractSessionManager.Session> cacheBuilder) throws IOException
+   public InfinispanSessionManagerProvider(CacheBuilder cacheBuilder) throws IOException
    {
       if (cacheBuilder == null)
          throw new IllegalArgumentException("Null cache builder");

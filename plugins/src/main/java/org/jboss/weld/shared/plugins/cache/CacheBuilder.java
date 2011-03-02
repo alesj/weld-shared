@@ -27,10 +27,9 @@ import org.infinispan.Cache;
 /**
  * Infinispan cache builder SPI.
  *
- * @param <T> exact type
  * @author <a href="mailto:ales.justin@jboss.org">Ales Justin</a>
  */
-public interface CacheBuilder<T>
+public interface CacheBuilder
 {
    /**
     * Start.
@@ -49,15 +48,5 @@ public interface CacheBuilder<T>
     * @param templateCacheName the template cache name
     * @return named cache instance
     */
-   Cache<String, T> getCache(String cacheName, String templateCacheName);
-
-   /**
-    * Get Infinispan cache.
-    *
-    * @param cacheName the cache name
-    * @param templateCacheName the template cache name
-    * @param valueType the value type
-    * @return named cache instance
-    */
-   <V> Cache<String, V> getCache(String cacheName, String templateCacheName, Class<V> valueType);
+   <V> Cache<String, V> getCache(String cacheName, String templateCacheName);
 }

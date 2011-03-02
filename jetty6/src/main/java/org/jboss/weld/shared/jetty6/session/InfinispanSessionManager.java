@@ -26,7 +26,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.io.ObjectStreamException;
 import java.lang.reflect.Method;
 import java.util.Map;
 
@@ -46,7 +46,7 @@ public class InfinispanSessionManager extends AbstractSessionManager
 
    private InfinispanSessionManagerAdapter<Session> adapter;
 
-   public InfinispanSessionManager(CacheBuilder<Session> cacheBuilder, String applicationId)
+   public InfinispanSessionManager(CacheBuilder cacheBuilder, String applicationId)
    {
       adapter = new Jetty6InfinispanSessionManagerAdapter(cacheBuilder, applicationId);
    }
@@ -98,7 +98,7 @@ public class InfinispanSessionManager extends AbstractSessionManager
       adapter.removeSession(idInCluster);
    }
 
-   private class InfinispanSession extends Session
+   class InfinispanSession extends Session
    {
       private InfinispanSession(HttpServletRequest request)
       {
@@ -110,22 +110,22 @@ public class InfinispanSessionManager extends AbstractSessionManager
          return adapter.newAttributeMap(this);
       }
 
-      private void writeObject(ObjectOutputStream out) throws IOException
+      protected Object writeReplace() throws ObjectStreamException
       {
          _values = null;
-         out.defaultWriteObject();
+         return this;
       }
 
       private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException
       {
          in.defaultReadObject();
-         // TODO -- check how we get adapter?
+         // _values should be set lazily, with the right cache value
       }
    }
 
    private class Jetty6InfinispanSessionManagerAdapter extends InfinispanSessionManagerAdapter<Session>
    {
-      private Jetty6InfinispanSessionManagerAdapter(CacheBuilder<Session> cacheBuilder, String region)
+      private Jetty6InfinispanSessionManagerAdapter(CacheBuilder cacheBuilder, String region)
       {
          super(cacheBuilder, region);
       }
