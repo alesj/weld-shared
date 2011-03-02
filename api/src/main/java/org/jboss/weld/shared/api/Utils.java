@@ -83,24 +83,25 @@ public class Utils
    @SuppressWarnings({"unchecked"})
    public static EventListener[] applyListener(EventListener[] listeners)
    {
-      boolean alreadyExists = false;
+      int alreadyExists = 0;
       List<EventListener> newListeners = new ArrayList();
       for (EventListener listener : listeners)
       {
-         if (listener instanceof Listener)
-         {
-            alreadyExists = true;
-            break;
-         }
-         else
-         {
+         boolean isWeldListener = (listener instanceof Listener);
+         if (isWeldListener)
+            alreadyExists++;
+
+         // non Weld listeners, plus the first one configured
+         if (isWeldListener == false || alreadyExists == 1)
             newListeners.add(listener);
-         }
       }
-      if (alreadyExists)
+
+      if (alreadyExists == 1)
          return listeners;
 
-      newListeners.add(0, new Listener());
+      if (alreadyExists == 0)
+         newListeners.add(0, new Listener());
+
       return newListeners.toArray(new EventListener[newListeners.size()]);
    }
 }
