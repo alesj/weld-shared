@@ -173,7 +173,7 @@ public class InfinispanSessionManager extends AbstractSessionManager
 
       public Integer getId()
       {
-         return null;  // null OK?
+         return CacheBuilder.SESSION_EXTERNALIZER_ID;
       }
    }
 

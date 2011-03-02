@@ -33,6 +33,11 @@ import org.infinispan.config.GlobalConfiguration;
 public interface CacheBuilder
 {
    /**
+    * Session externalizer id.
+    */
+   static Integer SESSION_EXTERNALIZER_ID = Integer.MAX_VALUE - 1;
+
+   /**
     * Start.
     */
    void start();
