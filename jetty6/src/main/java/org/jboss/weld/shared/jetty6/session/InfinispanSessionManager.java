@@ -24,6 +24,9 @@ package org.jboss.weld.shared.jetty6.session;
 
 import javax.servlet.http.HttpServletRequest;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.lang.reflect.Method;
 import java.util.Map;
 
@@ -87,18 +90,37 @@ public class InfinispanSessionManager extends AbstractSessionManager
 
    protected Session newSession(HttpServletRequest request)
    {
-      return new Session(request)
-      {
-         protected Map newAttributeMap()
-         {
-            return adapter.newAttributeMap(this);
-         }
-      };
+      return new InfinispanSession(request);
    }
 
    protected void removeSession(String idInCluster)
    {
       adapter.removeSession(idInCluster);
+   }
+
+   private class InfinispanSession extends Session
+   {
+      private InfinispanSession(HttpServletRequest request)
+      {
+         super(request);
+      }
+
+      protected Map newAttributeMap()
+      {
+         return adapter.newAttributeMap(this);
+      }
+
+      private void writeObject(ObjectOutputStream out) throws IOException
+      {
+         _values = null;
+         out.defaultWriteObject();
+      }
+
+      private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException
+      {
+         in.defaultReadObject();
+         // TODO -- check how we get adapter?
+      }
    }
 
    private class Jetty6InfinispanSessionManagerAdapter extends InfinispanSessionManagerAdapter<Session>
