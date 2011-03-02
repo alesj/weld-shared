@@ -29,6 +29,7 @@ import org.mortbay.jetty.Handler;
 import org.mortbay.jetty.SessionManager;
 import org.mortbay.jetty.handler.ContextHandlerCollection;
 import org.mortbay.jetty.servlet.SessionHandler;
+import org.mortbay.jetty.webapp.WebAppContext;
 
 /**
  * Custom context handler.
@@ -37,6 +38,7 @@ import org.mortbay.jetty.servlet.SessionHandler;
  */
 public class CustomContextHandlerCollection extends ContextHandlerCollection
 {
+   private String webappDir = "webapps/";
    private SessionManagerProvider sessionManagerProvider;
 
    public CustomContextHandlerCollection()
@@ -47,21 +49,33 @@ public class CustomContextHandlerCollection extends ContextHandlerCollection
    public void addHandler(Handler handler)
    {
       super.addHandler(handler);
-      if (handler instanceof WeldAppContext)
+      if (handler instanceof WeldAppContext) // only handle true web apps from webapps/
       {
-         WeldAppContext wac = (WeldAppContext) handler;
+         WebAppContext wap = (WebAppContext) handler;
          if (sessionManagerProvider != null)
          {
-            SessionHandler sessionHandler = wac.getSessionHandler();
-            String applicationId = wac.getWar();
+            SessionHandler sessionHandler = wap.getSessionHandler();
+            String applicationId = getApplicationId(wap);
             SessionManager manager = sessionManagerProvider.createSessionManager(applicationId);
             sessionHandler.setSessionManager(manager);
          }
       }
    }
 
+   protected String getApplicationId(WebAppContext wap)
+   {
+      String war = wap.getWar();
+      int p = war.lastIndexOf(webappDir);
+      return war.substring(p + webappDir.length());
+   }
+
    public void setSessionManagerProvider(SessionManagerProvider sessionManagerProvider)
    {
       this.sessionManagerProvider = sessionManagerProvider;
+   }
+
+   public void setWebappDir(String webappDir)
+   {
+      this.webappDir = webappDir;
    }
 }
