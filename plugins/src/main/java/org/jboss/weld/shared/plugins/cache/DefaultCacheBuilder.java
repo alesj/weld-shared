@@ -84,6 +84,6 @@ public class DefaultCacheBuilder<T> implements CacheBuilder<T>
    public <V> Cache<String, V> getCache(String cacheName, String templateCacheName, Class<V> valueType)
    {
       cacheManager.defineConfiguration(cacheName, templateCacheName, overrideConfiguration);
-      return cacheManager.getCache();
+      return cacheManager.getCache(cacheName);
    }
 }
