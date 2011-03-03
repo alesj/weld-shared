@@ -37,7 +37,6 @@ import org.jboss.weld.shared.plugins.cache.CacheBuilder;
 import org.jboss.weld.shared.plugins.session.InfinispanSessionManagerAdapter;
 
 import org.infinispan.marshall.Externalizer;
-import org.infinispan.notifications.Listener;
 import org.infinispan.notifications.cachelistener.annotation.CacheEntryEvicted;
 import org.infinispan.notifications.cachelistener.event.CacheEntryEvictedEvent;
 import org.mortbay.jetty.servlet.AbstractSessionManager;
