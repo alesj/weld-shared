@@ -66,13 +66,4 @@
          <l1 enabled="true" lifespan="600000"/>
       </clustering>
    </namedCache>
-
-   <namedCache name="Attributes">
-      <unsafe unreliableReturnValues="true"/>
-      <clustering mode="distribution">
-         <sync replTimeout="20000"/>
-         <hash numOwners="2" rehashWait="120000" rehashRpcTimeout="600000"/>
-         <l1 enabled="true" lifespan="600000"/>
-      </clustering>
-   </namedCache>
 </infinispan>

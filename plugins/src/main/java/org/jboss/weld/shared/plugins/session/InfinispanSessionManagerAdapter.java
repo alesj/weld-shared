@@ -24,7 +24,6 @@ package org.jboss.weld.shared.plugins.session;
 
 import javax.servlet.http.HttpSession;
 
-import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.security.AccessController;
 import java.security.PrivilegedExceptionAction;
@@ -52,8 +51,7 @@ public abstract class InfinispanSessionManagerAdapter<T extends HttpSession>
 
    private Cache<String, T> cache;
    private String region;
-   private String sessionsCacheName = "Sessions";
-   private String attributesCacheName = "Attributes";
+   private String templateCacheName = "Sessions";
 
    protected InfinispanSessionManagerAdapter(CacheBuilder cacheBuilder, String region)
    {
@@ -88,7 +86,7 @@ public abstract class InfinispanSessionManagerAdapter<T extends HttpSession>
    {
       if (cache == null)
       {
-         Cache<String, T> temp = cacheBuilder.getCache(region, sessionsCacheName);
+         Cache<String, T> temp = cacheBuilder.getCache(region, templateCacheName);
          temp.addListener(createListener());
          cache = temp;
       }
@@ -118,14 +116,12 @@ public abstract class InfinispanSessionManagerAdapter<T extends HttpSession>
    @SuppressWarnings({"unchecked"})
    public Map newAttributeMap(T session)
    {
-      Cache<String, Serializable> attributes = cacheBuilder.getCache(attributesCacheName, attributesCacheName);
-      return AtomicMapLookup.getAtomicMap(attributes, getId(session));
+      return AtomicMapLookup.getAtomicMap(getCache(), getId(session));
    }
 
    public void invalidateAttributeMap(T session)
    {
-      Cache<String, Serializable> attributes = cacheBuilder.getCache(attributesCacheName, attributesCacheName);
-      AtomicMapLookup.removeAtomicMap(attributes, getId(session));
+      AtomicMapLookup.removeAtomicMap(getCache(), getId(session));
    }
 
    public Map getSessionMap()
@@ -170,13 +166,8 @@ public abstract class InfinispanSessionManagerAdapter<T extends HttpSession>
       getCache().remove(idInCluster);
    }
 
-   public void setSessionsCacheName(String sessionsCacheName)
+   public void setTemplateCacheName(String templateCacheName)
    {
-      this.sessionsCacheName = sessionsCacheName;
-   }
-
-   public void setAttributesCacheName(String attributesCacheName)
-   {
-      this.attributesCacheName = attributesCacheName;
+      this.templateCacheName = templateCacheName;
    }
 }
