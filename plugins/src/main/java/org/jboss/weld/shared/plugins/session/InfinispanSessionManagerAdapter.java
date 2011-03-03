@@ -24,9 +24,6 @@ package org.jboss.weld.shared.plugins.session;
 
 import javax.servlet.http.HttpSession;
 
-import java.lang.reflect.Method;
-import java.security.AccessController;
-import java.security.PrivilegedExceptionAction;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Map;
@@ -62,26 +59,6 @@ public abstract class InfinispanSessionManagerAdapter<T extends HttpSession>
       this.cacheBuilder = cacheBuilder;
       this.region = region;
       this.suffix = "_AttributeMap_" + System.currentTimeMillis();
-   }
-
-   public static Method getClusterId(final Class<?> sessionClass)
-   {
-      try
-      {
-         return AccessController.doPrivileged(new PrivilegedExceptionAction<Method>()
-         {
-            public Method run() throws Exception
-            {
-               Method getClusterId = sessionClass.getDeclaredMethod("getClusterId");
-               getClusterId.setAccessible(true);
-               return getClusterId;
-            }
-         });
-      }
-      catch (Throwable ignored)
-      {
-      }
-      return null;
    }
 
    private Cache<String, T> getCache()

@@ -27,7 +27,6 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
-import java.lang.reflect.Method;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -50,7 +49,6 @@ import org.mortbay.jetty.servlet.AbstractSessionManager;
 public class InfinispanSessionManager extends AbstractSessionManager
 {
    private static AtomicBoolean addExternalizer = new AtomicBoolean(true);
-   private static Method idHack = InfinispanSessionManagerAdapter.getClusterId(Session.class);
 
    private InfinispanSessionManagerAdapter<InfinispanSession> adapter;
 
@@ -121,6 +119,11 @@ public class InfinispanSessionManager extends AbstractSessionManager
          super(created, clusterId);
          _cookieSet = cookieSet;
          _lastAccessed = lastAccessed;
+      }
+
+      private String _getClusterId()
+      {
+         return getClusterId();
       }
 
       private long getIdle()
@@ -223,15 +226,7 @@ public class InfinispanSessionManager extends AbstractSessionManager
 
       protected String getId(InfinispanSession session)
       {
-         try
-         {
-            if (idHack != null)
-               return (String) idHack.invoke(session);
-         }
-         catch (Throwable ignored)
-         {
-         }
-         return session.getId();
+         return session._getClusterId();
       }
 
       protected long getIdle(InfinispanSession session)
