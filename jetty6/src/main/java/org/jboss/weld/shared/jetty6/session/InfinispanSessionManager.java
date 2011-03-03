@@ -199,7 +199,7 @@ public class InfinispanSessionManager extends AbstractSessionManager
    }
 
    @org.infinispan.notifications.Listener
-   private class SessionListener implements EvictionListener<InfinispanSession>
+   public class SessionListener implements EvictionListener<InfinispanSession>
    {
       @CacheEntryEvicted
       public void onEvict(CacheEntryEvictedEvent<String, InfinispanSession> event)
