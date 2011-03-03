@@ -32,6 +32,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 import org.jboss.weld.shared.plugins.cache.CacheBuilder;
 
@@ -85,7 +86,11 @@ public abstract class InfinispanSessionManagerAdapter<T extends HttpSession>
    private Cache<String, T> getCache()
    {
       if (cache == null)
-         cache = cacheBuilder.getCache(region, sessionsCacheName);
+      {
+         Cache<String, T> temp = cacheBuilder.getCache(region, sessionsCacheName);
+         temp.addListener(createListener());
+         cache = temp;
+      }
 
       return cache;
    }
@@ -101,7 +106,11 @@ public abstract class InfinispanSessionManagerAdapter<T extends HttpSession>
          cache.stop();
    }
 
+   protected abstract Object createListener();
+
    protected abstract String getId(T session);
+
+   protected abstract long getIdle(T session);
 
    protected abstract void invalidate(T session);
 
@@ -129,12 +138,16 @@ public abstract class InfinispanSessionManagerAdapter<T extends HttpSession>
 
    public void addSession(T session)
    {
-      getCache().put(getId(session), session);
+      String id = getId(session);
+      long idle = getIdle(session);
+      getCache().put(id, session, -1, TimeUnit.MILLISECONDS, idle, TimeUnit.MILLISECONDS);
    }
 
    public void replaceSession(T session)
    {
-      getCache().replace(getId(session), session);
+      String id = getId(session);
+      long idle = getIdle(session);
+      getCache().replace(id, session, -1, TimeUnit.MILLISECONDS, idle, TimeUnit.MILLISECONDS);
    }
 
    public T getSession(String idInCluster)

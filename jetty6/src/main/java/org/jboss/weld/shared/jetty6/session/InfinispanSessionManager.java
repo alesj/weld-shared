@@ -37,6 +37,9 @@ import org.jboss.weld.shared.plugins.cache.CacheBuilder;
 import org.jboss.weld.shared.plugins.session.InfinispanSessionManagerAdapter;
 
 import org.infinispan.marshall.Externalizer;
+import org.infinispan.notifications.Listener;
+import org.infinispan.notifications.cachelistener.annotation.CacheEntryEvicted;
+import org.infinispan.notifications.cachelistener.event.CacheEntryEvictedEvent;
 import org.mortbay.jetty.servlet.AbstractSessionManager;
 
 /**
@@ -49,7 +52,7 @@ public class InfinispanSessionManager extends AbstractSessionManager
    private static AtomicBoolean addExternalizer = new AtomicBoolean(true);
    private static Method idHack = InfinispanSessionManagerAdapter.getClusterId(Session.class);
 
-   private InfinispanSessionManagerAdapter<Session> adapter;
+   private InfinispanSessionManagerAdapter<InfinispanSession> adapter;
 
    public InfinispanSessionManager(CacheBuilder cacheBuilder, String applicationId)
    {
@@ -83,7 +86,7 @@ public class InfinispanSessionManager extends AbstractSessionManager
 
    protected void addSession(Session session)
    {
-      adapter.addSession(session);
+      adapter.addSession((InfinispanSession) session);
    }
 
    public Session getSession(String idInCluster)
@@ -118,6 +121,11 @@ public class InfinispanSessionManager extends AbstractSessionManager
          super(created, clusterId);
          _cookieSet = cookieSet;
          _lastAccessed = lastAccessed;
+      }
+
+      private long getIdle()
+      {
+         return _maxIdleMs;
       }
 
       protected Map newAttributeMap()
@@ -190,14 +198,30 @@ public class InfinispanSessionManager extends AbstractSessionManager
       }
    }
 
-   private class Jetty6InfinispanSessionManagerAdapter extends InfinispanSessionManagerAdapter<Session>
+   @org.infinispan.notifications.Listener
+   private class SessionListener
+   {
+      @CacheEntryEvicted
+      public void onEvict(CacheEntryEvictedEvent<String, InfinispanSession> event)
+      {
+         Session session = event.getValue();
+         session.invalidate();
+      }
+   }
+
+   private class Jetty6InfinispanSessionManagerAdapter extends InfinispanSessionManagerAdapter<InfinispanSession>
    {
       private Jetty6InfinispanSessionManagerAdapter(CacheBuilder cacheBuilder, String region)
       {
          super(cacheBuilder, region);
       }
 
-      protected String getId(Session session)
+      protected Object createListener()
+      {
+         return new SessionListener();
+      }
+
+      protected String getId(InfinispanSession session)
       {
          try
          {
@@ -210,7 +234,12 @@ public class InfinispanSessionManager extends AbstractSessionManager
          return session.getId();
       }
 
-      protected void invalidate(Session session)
+      protected long getIdle(InfinispanSession session)
+      {
+         return session.getIdle();
+      }
+
+      protected void invalidate(InfinispanSession session)
       {
          session.invalidate();
       }
