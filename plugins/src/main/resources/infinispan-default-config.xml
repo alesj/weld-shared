@@ -14,6 +14,7 @@
 
    <namedCache name="Sessions">
       <clustering mode="d">
+         <hash numOwners="2" rehashWait="120000" rehashRpcTimeout="600000"/>
          <sync replTimeout="60000" />
          <l1 enabled="false" />
       </clustering>
@@ -21,6 +22,7 @@
 
    <namedCache name="Attributes">
       <clustering mode="r">
+         <hash numOwners="2" rehashWait="120000" rehashRpcTimeout="600000"/>
          <sync replTimeout="60000" />
          <stateRetrieval fetchInMemoryState="true" />
       </clustering>
