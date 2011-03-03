@@ -106,7 +106,7 @@ public abstract class InfinispanSessionManagerAdapter<T extends HttpSession>
          cache.stop();
    }
 
-   protected abstract EvictionListener createListener();
+   protected abstract EvictionListener<T> createListener();
 
    protected abstract String getId(T session);
 
