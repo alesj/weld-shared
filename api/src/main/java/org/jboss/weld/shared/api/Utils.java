@@ -59,6 +59,23 @@ public class Utils
     */
    public static boolean isWeldApp(BeansChecker beansChecker)
    {
+      Boolean flag = beansChecker.hasBeans();
+      if (flag != null)
+         return flag;
+
+      boolean beans = hasBeansXml(beansChecker);
+      beansChecker.setBeansFlag(beans);
+      return beans;
+   }
+
+   /**
+    * Do we have beans.xml.
+    *
+    * @param beansChecker the beans checker
+    * @return true if there is some beans.xml, false otherwise
+    */
+   protected static boolean hasBeansXml(BeansChecker beansChecker)
+   {
       try
       {
          if (beansChecker.checkWebInf())

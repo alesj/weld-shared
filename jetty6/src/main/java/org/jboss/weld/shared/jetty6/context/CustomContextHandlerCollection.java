@@ -29,7 +29,6 @@ import org.mortbay.jetty.Handler;
 import org.mortbay.jetty.SessionManager;
 import org.mortbay.jetty.handler.ContextHandlerCollection;
 import org.mortbay.jetty.servlet.SessionHandler;
-import org.mortbay.jetty.webapp.WebAppContext;
 
 /**
  * Custom context handler.
@@ -51,20 +50,20 @@ public class CustomContextHandlerCollection extends ContextHandlerCollection
       super.addHandler(handler);
       if (handler instanceof WeldAppContext) // only handle true web apps from webapps/
       {
-         WebAppContext wap = (WebAppContext) handler;
+         WeldAppContext wac = (WeldAppContext) handler;
          if (sessionManagerProvider != null)
          {
-            SessionHandler sessionHandler = wap.getSessionHandler();
-            String applicationId = getApplicationId(wap);
+            SessionHandler sessionHandler = wac.getSessionHandler();
+            String applicationId = getApplicationId(wac);
             SessionManager manager = sessionManagerProvider.createSessionManager(applicationId);
             sessionHandler.setSessionManager(manager);
          }
       }
    }
 
-   protected String getApplicationId(WebAppContext wap)
+   protected String getApplicationId(WeldAppContext wac)
    {
-      String war = wap.getWar();
+      String war = wac.getWar();
       int p = war.lastIndexOf(webappDir);
       return war.substring(p + webappDir.length());
    }

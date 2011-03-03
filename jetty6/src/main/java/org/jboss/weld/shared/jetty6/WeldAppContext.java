@@ -25,6 +25,7 @@ package org.jboss.weld.shared.jetty6;
 import java.io.IOException;
 import java.util.EventListener;
 
+import org.jboss.weld.environment.jetty.WeldServletHandler;
 import org.jboss.weld.shared.api.BeansChecker;
 import org.jboss.weld.shared.api.Utils;
 
@@ -38,10 +39,31 @@ import org.mortbay.resource.Resource;
  */
 public class WeldAppContext extends WebAppContext implements BeansChecker
 {
+   private Boolean beans;
+
+   public Boolean hasBeans()
+   {
+      return beans;
+   }
+
+   public void setBeansFlag(boolean flag)
+   {
+      beans = flag;
+   }
+
    public boolean checkWebInf() throws IOException
    {
       Resource beansXml = getWebInf().addPath("beans.xml");
       return beansXml.exists();
+   }
+
+   public void setClassLoader(ClassLoader classLoader)
+   {
+      super.setClassLoader(classLoader);
+      if (Utils.isWeldApp(this))
+      {
+         WeldServletHandler.process(this);
+      }
    }
 
    public void setEventListeners(EventListener[] eventListeners)

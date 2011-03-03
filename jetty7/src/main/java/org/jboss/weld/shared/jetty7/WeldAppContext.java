@@ -38,6 +38,18 @@ import org.eclipse.jetty.webapp.WebAppContext;
  */
 public class WeldAppContext extends WebAppContext implements BeansChecker
 {
+   private Boolean beans;
+
+   public Boolean hasBeans()
+   {
+      return beans;
+   }
+
+   public void setBeansFlag(boolean flag)
+   {
+      beans = flag;
+   }
+
    public boolean checkWebInf() throws IOException
    {
       Resource beansXml = getWebInf().addPath("beans.xml");

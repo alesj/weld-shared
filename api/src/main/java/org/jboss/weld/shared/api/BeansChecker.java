@@ -32,6 +32,20 @@ import java.io.IOException;
 public interface BeansChecker
 {
    /**
+    * Do we have beans.xml.
+    *
+    * @return true if we have beans.xml, false if not, null if we don't know
+    */
+   Boolean hasBeans();
+
+   /**
+    * Set beans flag.
+    *
+    * @param flag the beans flag
+    */
+   void setBeansFlag(boolean flag);
+
+   /**
     * Do we have beans.xml in WEB-INF.
     *
     * @return true if beans.xml exist in WEB-INF, false otherwise
