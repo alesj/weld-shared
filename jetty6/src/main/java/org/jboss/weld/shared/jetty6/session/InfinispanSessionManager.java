@@ -34,6 +34,7 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.jboss.weld.shared.plugins.cache.CacheBuilder;
+import org.jboss.weld.shared.plugins.session.EvictionListener;
 import org.jboss.weld.shared.plugins.session.InfinispanSessionManagerAdapter;
 
 import org.infinispan.marshall.Externalizer;
@@ -198,7 +199,7 @@ public class InfinispanSessionManager extends AbstractSessionManager
    }
 
    @org.infinispan.notifications.Listener
-   private class SessionListener
+   private class SessionListener implements EvictionListener<InfinispanSession>
    {
       @CacheEntryEvicted
       public void onEvict(CacheEntryEvictedEvent<String, InfinispanSession> event)
@@ -215,7 +216,7 @@ public class InfinispanSessionManager extends AbstractSessionManager
          super(cacheBuilder, region);
       }
 
-      protected Object createListener()
+      protected EvictionListener<InfinispanSession> createListener()
       {
          return new SessionListener();
       }
