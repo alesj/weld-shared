@@ -125,6 +125,19 @@ public class InfinispanSessionManager extends AbstractSessionManager
          return adapter.newAttributeMap(this);
       }
 
+      protected void complete()
+      {
+         super.complete();
+         if (isValid())
+            adapter.replaceSession(this);
+      }
+
+      public void invalidate() throws IllegalStateException
+      {
+         super.invalidate();
+         adapter.invalidateAttributeMap();
+      }
+
       private void doWriteObject(ObjectOutput out) throws IOException
       {
          out.writeUTF(_clusterId);

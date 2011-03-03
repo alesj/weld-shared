@@ -111,6 +111,12 @@ public abstract class InfinispanSessionManagerAdapter<T extends HttpSession>
       return new SharedAttributeMap(getId(session), attributes);
    }
 
+   public void invalidateAttributeMap()
+   {
+      Cache<String, Serializable> attributes = cacheBuilder.getCache(region, attributesCacheName);
+      attributes.stop();
+   }
+
    public Map getSessionMap()
    {
       return Collections.unmodifiableMap(getCache());
@@ -124,6 +130,11 @@ public abstract class InfinispanSessionManagerAdapter<T extends HttpSession>
    public void addSession(T session)
    {
       getCache().put(getId(session), session);
+   }
+
+   public void replaceSession(T session)
+   {
+      getCache().replace(getId(session), session);
    }
 
    public T getSession(String idInCluster)
