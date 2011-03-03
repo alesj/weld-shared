@@ -143,7 +143,7 @@ public class InfinispanSessionManager extends AbstractSessionManager
       public void invalidate() throws IllegalStateException
       {
          super.invalidate();
-         adapter.invalidateAttributeMap();
+         adapter.invalidateAttributeMap(this);
       }
 
       private void doWriteObject(ObjectOutput out) throws IOException

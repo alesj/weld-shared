@@ -37,6 +37,7 @@ import java.util.concurrent.TimeUnit;
 import org.jboss.weld.shared.plugins.cache.CacheBuilder;
 
 import org.infinispan.Cache;
+import org.infinispan.atomic.AtomicMapLookup;
 
 /**
  * Infinispan based session manager adapter.
@@ -114,16 +115,17 @@ public abstract class InfinispanSessionManagerAdapter<T extends HttpSession>
 
    protected abstract void invalidate(T session);
 
+   @SuppressWarnings({"unchecked"})
    public Map newAttributeMap(T session)
    {
-      Cache<String, Serializable> attributes = cacheBuilder.getCache(region, attributesCacheName);
-      return new SharedAttributeMap(getId(session), attributes);
+      Cache<String, Serializable> attributes = cacheBuilder.getCache(attributesCacheName, attributesCacheName);
+      return AtomicMapLookup.getAtomicMap(attributes, getId(session));
    }
 
-   public void invalidateAttributeMap()
+   public void invalidateAttributeMap(T session)
    {
-      Cache<String, Serializable> attributes = cacheBuilder.getCache(region, attributesCacheName);
-      attributes.stop();
+      Cache<String, Serializable> attributes = cacheBuilder.getCache(attributesCacheName, attributesCacheName);
+      AtomicMapLookup.removeAtomicMap(attributes, getId(session));
    }
 
    public Map getSessionMap()
