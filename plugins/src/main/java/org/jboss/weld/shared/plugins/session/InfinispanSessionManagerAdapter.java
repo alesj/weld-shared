@@ -52,6 +52,7 @@ public abstract class InfinispanSessionManagerAdapter<T extends HttpSession>
    private Cache<String, T> cache;
    private String region;
    private String templateCacheName = "Sessions";
+   private String suffix;
 
    protected InfinispanSessionManagerAdapter(CacheBuilder cacheBuilder, String region)
    {
@@ -60,6 +61,7 @@ public abstract class InfinispanSessionManagerAdapter<T extends HttpSession>
 
       this.cacheBuilder = cacheBuilder;
       this.region = region;
+      this.suffix = "_AttributeMap_" + System.currentTimeMillis();
    }
 
    public static Method getClusterId(final Class<?> sessionClass)
@@ -116,12 +118,12 @@ public abstract class InfinispanSessionManagerAdapter<T extends HttpSession>
    @SuppressWarnings({"unchecked"})
    public Map newAttributeMap(T session)
    {
-      return AtomicMapLookup.getAtomicMap(getCache(), getId(session));
+      return AtomicMapLookup.getAtomicMap(getCache(), getId(session) + suffix);
    }
 
    public void invalidateAttributeMap(T session)
    {
-      AtomicMapLookup.removeAtomicMap(getCache(), getId(session));
+      AtomicMapLookup.removeAtomicMap(getCache(), getId(session) + suffix);
    }
 
    public Map getSessionMap()
