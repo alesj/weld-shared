@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <infinispan xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-            xsi:schemaLocation="urn:infinispan:config:4.0 http://www.infinispan.org/schemas/infinispan-config-4.0.xsd"
-            xmlns="urn:infinispan:config:4.0">
+            xsi:schemaLocation="urn:infinispan:config:5.0 http://www.infinispan.org/schemas/infinispan-config-5.0.xsd"
+            xmlns="urn:infinispan:config:5.0">
 
    <global>
       <asyncListenerExecutor
@@ -59,6 +59,7 @@
    <!-- Individually configured "named" caches -->
    <!-- ************************************** -->
    <namedCache name="Sessions">
+      <transaction transactionManagerLookupClass="org.infinispan.transaction.lookup.DummyTransactionManagerLookup"/>
       <unsafe unreliableReturnValues="true"/>
       <clustering mode="distribution">
          <sync replTimeout="200000"/>
