@@ -17,7 +17,7 @@
       <transaction transactionManagerLookupClass="org.infinispan.transaction.lookup.DummyTransactionManagerLookup"/>
       <clustering>
          <hash numOwners="2" rehashWait="5000" rehashRpcTimeout="10000"/>
-         <async replTimeout="60000" />
+         <async/>
          <l1 enabled="true" />
       </clustering>
    </namedCache>
