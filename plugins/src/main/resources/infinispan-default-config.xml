@@ -15,10 +15,10 @@
 
    <namedCache name="Sessions">
       <transaction transactionManagerLookupClass="org.infinispan.transaction.lookup.DummyTransactionManagerLookup"/>
-      <clustering mode="d">
-         <hash numOwners="2" rehashWait="120000" rehashRpcTimeout="600000"/>
-         <sync replTimeout="60000" />
-         <l1 enabled="false" />
+      <clustering>
+         <hash numOwners="2" rehashWait="5000" rehashRpcTimeout="10000"/>
+         <async replTimeout="60000" />
+         <l1 enabled="true" />
       </clustering>
    </namedCache>
 </infinispan>
